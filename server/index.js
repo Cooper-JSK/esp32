@@ -1,8 +1,9 @@
-import express from 'express';
+import express from "express"
 import bodyParser from 'body-parser';
 import fetch from 'node-fetch';
 
 const app = express();
+app.use(express.json());
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
