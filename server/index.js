@@ -1,38 +1,22 @@
-import express from "express"
-import bodyParser from 'body-parser';
-import fetch from 'node-fetch';
-
+import express from 'express';
 const app = express();
-app.use(express.json());
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
+let ledStatus = 'off';
 
-const ESP32_IP = 'http://your_esp32_local_ip'; // Replace with your ESP32 IP
+app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello from Cloud Server!');
+app.get('/status', (req, res) => {
+    res.json({ status: ledStatus });
 });
 
-app.post('/pump/:action', async (req, res) => {
-    const action = req.params.action;
-    try {
-        const response = await fetch(`${ESP32_IP}/pump/${action}`);
-        const text = await response.text();
-        res.send(text);
-    } catch (error) {
-        res.status(500).send('Error communicating with ESP32');
-    }
-});
-
-app.post('/fan/:action', async (req, res) => {
-    const action = req.params.action;
-    try {
-        const response = await fetch(`${ESP32_IP}/fan/${action}`);
-        const text = await response.text();
-        res.send(text);
-    } catch (error) {
-        res.status(500).send('Error communicating with ESP32');
+app.post('/control', (req, res) => {
+    const { status } = req.body;
+    if (status === 'on' || status === 'off') {
+        ledStatus = status;
+        res.json({ message: `LED turned ${status}` });
+    } else {
+        res.status(400).json({ error: 'Invalid status' });
     }
 });
 
