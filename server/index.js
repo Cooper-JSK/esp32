@@ -6,17 +6,24 @@ let ledStatus = 'off';
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    return "Hello World";
+})
+
 app.get('/status', (req, res) => {
     res.json({ status: ledStatus });
 });
 
-app.post('/control', (req, res) => {
-    const { status } = req.body;
-    if (status === 'on' || status === 'off') {
-        ledStatus = status;
-        res.json({ message: `LED turned ${status}` });
+app.post('/:action', (req, res) => {
+    const { action } = req.params;
+    if (action === 'turnOn') {
+        ledStatus = 'on';
+        res.json({ message: 'LED turned on' });
+    } else if (action === 'turnOff') {
+        ledStatus = 'off';
+        res.json({ message: 'LED turned off' });
     } else {
-        res.status(400).json({ error: 'Invalid status' });
+        res.status(400).json({ error: 'Invalid action' });
     }
 });
 
